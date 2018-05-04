@@ -1,14 +1,19 @@
-const Koa = require('koa');
-const Router = require('koa-router');
-const Body = require('koa-bodyparser');
+const koa = require('koa'); // koa@2
+const koaRouter = require('koa-router'); // koa-router@next
+const koaBody = require('koa-bodyparser'); // koa-bodyparser@next
 const { graphqlKoa, graphiqlKoa } = require('apollo-server-koa');
-const app = new Koa();
 
-Router.post('/graphql', Body(), graphqlKoa({ schema: myGraphQLSchema }));
-Router.get('/graphql', graphqlKoa({ schema: myGraphQLSchema }));
+const app = new koa();
+const router = new koaRouter();
+const PORT = 3000;
+const myGraphQLSchema = {};
 
-Router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }));
+// koaBody is needed just for POST.
+router.post('/graphql', koaBody(), graphqlKoa({ schema: myGraphQLSchema }));
+router.get('/graphql', graphqlKoa({ schema: myGraphQLSchema }));
 
-app.use(Router.routes());
-app.use(Router.allowedMethods());
-app.listen(3000);
+router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }));
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+app.listen(PORT);
